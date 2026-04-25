@@ -1,159 +1,133 @@
-# Turborepo starter
+# SmartSeason Field Monitoring System
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack web application for tracking crop progress across multiple fields during a growing season. Built as a technical assessment for Shamba Records.
 
-## Using this example
+## Live Demo
 
-Run the following command:
+- **Frontend:** [your-deployment-url]
+- **Backend:** [your-api-url]
 
-```sh
-npx create-turbo@latest
+## Demo Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@smartseason.com | admin123 |
+| Agent | agent@smartseason.com | agent123 |
+
+## Tech Stack
+
+- **Monorepo:** Turborepo + pnpm workspaces
+- **Backend:** Node.js + Express + TypeScript
+- **Frontend:** Next.js 15 + Tailwind CSS
+- **Database:** PostgreSQL (Docker)
+- **ORM:** Prisma
+
+## Project Structure
+smartseason/
+├── apps/
+│   ├── api/          # Node.js + Express backend
+│   └── web/          # Next.js frontend
+├── packages/
+│   └── shared/       # Shared TypeScript types
+├── docker-compose.yml
+└── README.md
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js >= 18
+- pnpm
+- Docker
+
+### 1. Clone the repository
+```bash
+git clone <your-repo-url>
+cd smartseason
 ```
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+### 2. Install dependencies
+```bash
+pnpm install
 ```
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+### 3. Start the database
+```bash
+docker compose up -d
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 4. Set up environment variables
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+Create `apps/api/.env`:
+```env
+DATABASE_URL="postgresql://smartseason:smartseason123@localhost:5432/smartseason"
+JWT_SECRET="smartseason-secret-key-change-in-production"
+PORT=4000
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+Create `apps/web/.env.local`:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+### 5. Run database migrations and seed
+```bash
+cd apps/api
+npx prisma migrate dev
+npx prisma db seed
 ```
 
-Without global `turbo`, use your package manager:
+### 6. Start the development servers
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+**Backend:**
+```bash
+cd apps/api
+pnpm dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+**Frontend:**
+```bash
+cd apps/web
+pnpm dev
 ```
 
-Without global `turbo`:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:4000
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## Design Decisions
 
-### Remote Caching
+### 1. Monorepo with Turborepo
+Used Turborepo to manage both apps in a single repository. This allows shared TypeScript types between frontend and backend, and running both apps with a single command.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### 2. PostgreSQL over MySQL
+PostgreSQL was chosen for its stronger data integrity, better support for complex queries, and cleaner integration with Prisma ORM.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### 3. Next.js over plain React
+Next.js provides server-side rendering for faster dashboard loads, built-in file-based routing, and a better developer experience for a data-heavy application.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### 4. Field Status Logic
+Each field has a computed status based on two rules:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+- **COMPLETED** → stage is `HARVESTED`
+- **AT_RISK** → today's date is past the `expectedHarvestDate` and the field is not yet harvested
+- **ACTIVE** → everything else
 
-```sh
-cd my-turborepo
-turbo login
-```
+This approach was chosen over fixed day thresholds because different crops have vastly different growing cycles. Maize takes 90 days, coffee takes 3+ years. A fixed threshold would incorrectly mark healthy fields as AT_RISK.
 
-Without global `turbo`, use your package manager:
+By letting the admin set an `expectedHarvestDate` when creating a field, the system respects the actual growing cycle of each crop. The status is always computed automatically — never set manually.
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
+### 5. Role-Based Access Control
+Two roles: `ADMIN` and `AGENT`.
+- Admins can create fields, assign agents, and monitor all fields
+- Agents can only see their assigned fields and update stage/notes
+- JWT tokens carry the user's role, enforced at both middleware and service level
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 6. Audit Trail
+Every stage update creates a `FieldUpdate` record with the agent, stage, notes and timestamp. This gives coordinators full visibility into what happened on every field over time.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## Assumptions Made
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- An admin is created via the seed script — there is no public registration for admins
+- A field can exist without an assigned agent (unassigned state)
+- The `expectedHarvestDate` is set by the admin who knows the crop cycle
+- Notes are optional when updating a field stage
+- Agents can only update fields assigned to them

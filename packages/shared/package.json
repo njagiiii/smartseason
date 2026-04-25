@@ -1,0 +1,11 @@
+{
+  "name": "@smartseason/shared",
+  "version": "1.0.0",
+  "description": "Shared types for SmartSeason",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "license": "ISC"
+}
