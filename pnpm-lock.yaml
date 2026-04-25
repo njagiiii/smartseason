@@ -70,7 +70,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       axios:
-        specifier: ^1.15.2
+        specifier: ^1.7.7
         version: 1.15.2
       next:
         specifier: 15.3.1
@@ -82,11 +82,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
       react-hot-toast:
-        specifier: ^2.6.0
+        specifier: ^2.4.1
         version: 2.6.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      zustand:
-        specifier: ^5.0.12
-        version: 5.0.12(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
       '@types/node':
         specifier: ^22.15.3
@@ -98,7 +95,7 @@ importers:
         specifier: 19.2.2
         version: 19.2.2(@types/react@19.2.2)
       autoprefixer:
-        specifier: ^10.5.0
+        specifier: ^10.4.20
         version: 10.5.0(postcss@8.5.10)
       eslint:
         specifier: ^9.39.1
@@ -2517,24 +2514,6 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  zustand@5.0.12:
-    resolution: {integrity: sha512-i77ae3aZq4dhMlRhJVCYgMLKuSiZAaUPAct2AksxQ+gOtimhGMdXljRT21P5BNpeT4kXlLIckvkPM029OljD7g==}
-    engines: {node: '>=12.20.0'}
-    peerDependencies:
-      '@types/react': '>=18.0.0'
-      immer: '>=9.0.6'
-      react: '>=18.0.0'
-      use-sync-external-store: '>=1.2.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      immer:
-        optional: true
-      react:
-        optional: true
-      use-sync-external-store:
-        optional: true
 
 snapshots:
 
@@ -5115,8 +5094,3 @@ snapshots:
   word-wrap@1.2.5: {}
 
   yocto-queue@0.1.0: {}
-
-  zustand@5.0.12(@types/react@19.2.2)(react@19.2.0):
-    optionalDependencies:
-      '@types/react': 19.2.2
-      react: 19.2.0
