@@ -4,8 +4,8 @@ A full-stack web application for tracking crop progress across multiple fields d
 
 ## Live Demo
 
-- **Frontend:** [your-deployment-url]
-- **Backend API:** [your-api-url]
+- **Frontend:** https://smartseason-web.vercel.app/
+- **Backend API:** https://smartseason-api-zc36.onrender.com
 
 ## Demo Credentials
 
